@@ -104,6 +104,7 @@ struct rtpengine_config {
 	char			*https_cert;
 	char			*https_key;
 	int			http_threads;
+	char			*janus_secret;
 };
 
 

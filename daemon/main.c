@@ -48,6 +48,7 @@
 #include "dtmf.h"
 #include "jitter_buffer.h"
 #include "websocket.h"
+#include "janus.h"
 
 
 
@@ -453,6 +454,7 @@ static void options(int *argc, char ***argv) {
 		{ "https-cert", 0,0,	G_OPTION_ARG_STRING,	&rtpe_config.https_cert,"Certificate for HTTPS and WSS","FILE"},
 		{ "https-key", 0,0,	G_OPTION_ARG_STRING,	&rtpe_config.https_key,	"Private key for HTTPS and WSS","FILE"},
 		{ "https-threads", 0,0,	G_OPTION_ARG_INT,	&rtpe_config.http_threads,"Number of worker threads for HTTP and WS","INT"},
+		{ "janus-secret", 0,0,	G_OPTION_ARG_STRING,	&rtpe_config.janus_secret,"Admin secret for Janus protocol","STRING"},
 
 		{ NULL, }
 	};
@@ -793,6 +795,7 @@ static void options_free(void) {
 	g_strfreev(rtpe_config.https_ifs);
 	g_free(rtpe_config.https_cert);
 	g_free(rtpe_config.https_key);
+	g_free(rtpe_config.janus_secret);
 
 	// free common config options
 	config_load_free(&rtpe_config.common);
@@ -833,6 +836,7 @@ static void init_everything(void) {
 	dtmf_init();
 	jitter_buffer_init();
 	t38_init();
+	janus_init();
 }
 
 
@@ -1055,10 +1059,9 @@ int main(int argc, char **argv) {
 	redis_close(rtpe_redis_notify);
 
 	free_prefix();
-
 	options_free();
-
 	log_free();
+	janus_free();
 
 	obj_release(rtpe_cli);
 	obj_release(rtpe_udp);
